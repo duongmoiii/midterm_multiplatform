@@ -92,7 +92,7 @@ npx expo start -c
   - Xóa giảng viên với hộp thoại xác nhận đồng nhất trên cả Web và Mobile.
 - **Nhập hình ảnh đa nền tảng**: Chọn ảnh từ thư viện / máy tính, chụp ảnh Camera trên Expo Go, tự động resize & nén JPEG Base64 (hoạt động miễn phí trên gói Spark không cần Firebase Storage), hoặc dán URL ảnh.
 - **Chức năng nâng cao**:
-  - Thống kê nhanh: Tổng giảng viên, Tổng số lớp, Trung bình lớp/GV, Giảng viên nhiều lớp nhất.
+  - Thống kê nhanh: Tổng giảng viên, Giảng viên nhiều lớp nhất.
   - Tìm kiếm theo `IDGV` hoặc `Fullname`, lọc theo số lớp, sắp xếp tăng/giảm.
 
 ---
