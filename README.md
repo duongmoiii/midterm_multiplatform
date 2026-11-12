@@ -94,8 +94,6 @@ npx expo start -c
 - **Chức năng nâng cao**:
   - Thống kê nhanh: Tổng giảng viên, Tổng số lớp, Trung bình lớp/GV, Giảng viên nhiều lớp nhất.
   - Tìm kiếm theo `IDGV` hoặc `Fullname`, lọc theo số lớp, sắp xếp tăng/giảm.
-  - **Nạp dữ liệu mẫu** từ `database/GiangVien.json` lên Firestore bằng 1 click.
-  - **Xuất JSON (`GiangVien.json`)** trực tiếp từ dữ liệu Firestore để nộp file cơ sở dữ liệu.
 
 ---
 
