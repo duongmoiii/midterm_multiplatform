@@ -1,0 +1,82 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: GiangVien
+// Document ID: {idgv} (khớp với trường IDGV)
+// Fields (STRICT — đúng 4 trường theo yêu cầu đề thi, không thêm trường thừa):
+//   - IDGV: string (bắt buộc, 1..50 ký tự, khớp với document ID {idgv}, không chứa '/')
+//   - Fullname: string (bắt buộc, 2..120 ký tự)
+//   - Image: string (bắt buộc, URL http/https hoặc Base64 data:image/*, tối đa 800,000 ký tự)
+//   - SumClass: int (bắt buộc, số nguyên 0..1000)
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny: từ chối mọi truy cập không được khai báo tường minh
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function validStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+        request.resource.data[field].size() >= minLen &&
+        request.resource.data[field].size() <= maxLen;
+    }
+
+    function isValidImageUri(uri) {
+      return uri is string &&
+        uri.size() >= 1 &&
+        uri.size() <= 800000 &&
+        (uri.matches('^https://.*') ||
+         uri.matches('^http://.*') ||
+         uri.matches('^data:image/.*'));
+    }
+
+    // ===============================================================
+    // Domain Validator (dùng chung cho cả create và update)
+    // ===============================================================
+    function isValidGiangVien(idgv) {
+      let data = request.resource.data;
+      return hasOnlyAllowedFields(['IDGV', 'Fullname', 'Image', 'SumClass']) &&
+        hasRequiredFields(['IDGV', 'Fullname', 'Image', 'SumClass']) &&
+        validStringLength('IDGV', 1, 50) &&
+        data.IDGV == idgv &&
+        !data.IDGV.matches('.*/.*') &&
+        validStringLength('Fullname', 2, 120) &&
+        isValidImageUri(data.Image) &&
+        data.SumClass is int &&
+        data.SumClass >= 0 &&
+        data.SumClass <= 1000;
+    }
+
+    // ===============================================================
+    // Collection Rules: GiangVien
+    // ===============================================================
+    match /GiangVien/{idgv} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidGiangVien(idgv);
+      allow update: if isAuthenticated() && isValidGiangVien(idgv);
+      allow delete: if isAuthenticated();
+    }
+  }
+}
